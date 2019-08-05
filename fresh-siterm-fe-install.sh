@@ -9,13 +9,13 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-# Title 			: dtnrm
+# Title 			: SiteRM-FE
 # Author			: Justas Balcas
 # Email 			: justas.balcas (at) cern.ch
-# @Copyright		: Copyright (C) 2016 California Institute of Technology
-# Date			: 2017/09/26
+# @Copyright	  	        : Copyright (C) 2016 California Institute of Technology
+# Date		        	: 2017/09/26
 # =============================================================================
-##H fresh-site-fe-install.sh [OPTIONS]
+##H fresh-siterm-fe-install.sh [OPTIONS]
 ##H
 ##H Deploy all needed stuff for dtn-rm site-fe, called sensei
 ##H
@@ -30,7 +30,7 @@
 
 # TODO also force to specify TSDB parameters it should get from FE.
 # TODO. data directory should come from configuration parameter
-datadir=/data/config/
+datadir=/opt/dtnrm/fe/config
 workdir=`pwd`
 packages="git autoconf automake curl gcc libmnl-devel libuuid-devel lm_sensors make MySQL-python nc pkgconfig python wget python-psycopg2 PyYAML zlib-devel python-devel httpd mod_wsgi"
 # Check if release is supported.
@@ -64,7 +64,7 @@ done
 # =======================================================================
 # Do all checks and if all needed parameters are specified.
 if [ X"$rootdir" = X ]; then
-  echo "Usage: fresh-site-fe-install.sh [OPTIONS] (use -h for help)" 1>&2
+  echo "Usage: fresh-siterm-fe-install.sh [OPTIONS] (use -h for help)" 1>&2
   exit 1
 fi
 
@@ -109,29 +109,15 @@ echo "Packages: $packages"
 yum install -y epel-release
 yum install -y $packages
 
-echo 'Installing and upgrading pip.'
-wget https://bootstrap.pypa.io/get-pip.py
-python get-pip.py
-
 # Make sure root directory is there
 [ -d $rootdir ] || mkdir -p $rootdir || exit $?
 # Also make a tmp directory
 [ -d $tmpdir ] || mkdir -p $tmpdir || exit $?
 
-echo "==================================================================="
-echo "Installing netdata release $netdatarelease"
-# Receive netdata release and also untar it
-rm -rf $tmpdir/netdata-$netdatarelease
+echo 'Installing and upgrading pip.'
 cd $tmpdir
-[ -f netdata-$netdatarelease.tar.gz ] || wget https://github.com/firehol/netdata/releases/download/v$netdatarelease/netdata-$netdatarelease.tar.gz || exit $?
-tar -xf netdata-$netdatarelease.tar.gz -C $tmpdir || exit $?
-cd $tmpdir/netdata-$netdatarelease
-./netdata-installer.sh --dont-wait --install $rootdir || exit $?
-cd ..
-rm -rf $tmpdir/netdata-$netdatarelease
-# Append few configs so that netdata consumes less memory
-echo 1 >/sys/kernel/mm/ksm/run
-echo 1000 >/sys/kernel/mm/ksm/sleep_millisecs
+wget https://bootstrap.pypa.io/get-pip.py
+python get-pip.py
 
 echo "==================================================================="
 echo "We need latest setuptools to be able to install dtnrm package. Updating setuptools"
@@ -139,42 +125,20 @@ pip install --upgrade setuptools
 
 echo "==================================================================="
 echo "Cloning dtnrm and installing it"
-# TODO should be versioned same as netdata
-cd $workdir
-python setup-site-fe.py install || exit $?
+cd $rootdir
+rm -rf siterm-fe
+git clone https://github.com/sdn-sense/siterm-fe
+cd siterm-fe
+python setup.py install || exit $?
+cd ..
+rm -rf siterm-utilities
+git clone https://github.com/sdn-sense/siterm-utilities
+cd siterm-utilities
+python setup.py install || exit $?
 
 echo "==================================================================="
-if [ "$HISTORYDB" = true ] ; then
-  echo "Copying netdata configuration file and modifying it"
-  netdataconf=$rootdir/netdata/etc/netdata/netdata.conf
-  if [ -f $netdataconf ]; then
-    echo "Current config file:"
-    cat $netdataconf
-    echo ""
-    echo "-------------------------------------------------------------------"
-  fi
-  if [ -f packaging/netdata.conf ]; then
-    echo "Overwriting with temporary config file:"
-    cat packaging/netdata.conf
-    cp packaging/netdata.conf $netdataconf
-    echo ""
-    echo "-------------------------------------------------------------------"
-  fi
-  perl -pi -e "s/##HOSTNAME##/$hostname/g" $netdataconf
-  perl -pi -e "s/##REPOPORT##/$tsdport/g" $netdataconf
-  perl -pi -e "s/##REPOIP##/$tsdip/g" $netdataconf
-  perl -pi -e "s/##REPOPROT##/$tsdp/g" $netdataconf
-  echo "Final configuration file:"
-  cat $netdataconf
-  echo ""
-  echo "-------------------------------------------------------------------"
-  echo "==================================================================="
-  echo "Modifying ownership and permission rules for Site FE directories"
-  echo "-------------------------------------------------------------------"
-else
-  echo "WARNING: Netdata configuration was not modified. you will have to do it by hand."
-  echo "-------------------------------------------------------------------"
-fi
+echo "Modifying ownership and permission rules for Site FE directories"
+echo "-------------------------------------------------------------------"
 
 # Ownership
 echo "1. Making apache as owner of $datadir"
@@ -191,7 +155,6 @@ echo "4. Apply SELinux rule to allow Apache serve files from $datadir"
 chcon -t httpd_sys_content_t $datadir -R
 # Allow write only to specific dirs
 chcon -t httpd_sys_rw_content_t $datadir -R
-chcon -t httpd_sys_rw_content_t /data/www/html/sites/mysite/uploads -R
 echo "5. Applying mod_proxy policy change so that it can write remotely."
 echo "   More details: http://sysadminsjourney.com/content/2010/02/01/apache-modproxy-error-13permission-denied-error-rhel/"
 /usr/sbin/setsebool -P httpd_can_network_connect 1
@@ -211,5 +174,5 @@ echo "   3. Start httpd service"
 echo "   4. Execute all services and see if they work (While it is fresh install, just see if there is no obvious errors):"
 echo "        b) ContinuousLoop-update: MRML template preparation about all DTNs and Switches. "
 echo "        d) PolicyService: That deltas are accepted and it works"
-echo "   5. Make sure firewalld is not running or open port 80/tcp"
+echo "   5. Make sure firewalld is not running or open port 80/tcp or 443/tcp"
 exit 0
