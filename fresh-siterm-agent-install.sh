@@ -15,7 +15,7 @@
 # @Copyright        : Copyright (C) 2016 California Institute of Technology
 # Date            : 2017/09/26
 # =============================================================================
-##H fresh-dtnrm-install.sh [OPTIONS]
+##H fresh-siterm-agent-install.sh [OPTIONS]
 ##H
 ##H Deploy all needed stuff for dtn-rm
 ##H
@@ -63,7 +63,7 @@ done
 # =======================================================================
 # Do all checks and if all needed parameters are specified.
 if [ X"$rootdir" = X ]; then
-  echo "Usage: fresh-dtnrm-install.sh [OPTIONS] (use -h for help)" 1>&2
+  echo "Usage: fresh-siterm-agent-install.sh [OPTIONS] (use -h for help)" 1>&2
   exit 1
 fi
 
