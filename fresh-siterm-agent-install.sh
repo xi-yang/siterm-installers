@@ -26,6 +26,7 @@
 ##H  -P PORT        Time Series database repository port. No default;
 ##H  -I IP          Time Series database IP or hostname. No default;
 ##H  -U PROTOCOL    Time Series database protocol. By default tcp
+##H  -G GITREPO     Git Repo to use for installation. default sdn-sense
 ##H  -h             Display this help.
 
 # TODO also force to specify FE URL, FE Port; TSDB parameters it should get from FE.
@@ -54,6 +55,7 @@ while [ $# -ge 1 ]; do
     -P ) tsdport="$2"; shift; shift;;
     -I ) tsdip="$2"; shift; shift;;
     -U ) tsdp="$2"; shift; shift;;
+    -G ) gitr="$2"; shift; shift;;
     -h ) perl -ne '/^##H/ && do { s/^##H ?//; print }' < $0 1>&2; exit 1 ;;
     -* ) echo "$0: unrecognized option $1, use -h for help" 1>&2; exit 1 ;;
     *  ) break ;;
@@ -149,12 +151,12 @@ echo "==================================================================="
 echo "Cloning dtnrm and installing it"
 cd $rootdir
 rm -rf siterm-agent
-git clone https://github.com/sdn-sense/siterm-agent
+git clone https://github.com/$gitr/siterm-agent
 cd siterm-agent
 python setup.py install || exit $?
 cd ..
 rm -rf siterm-utilities
-git clone https://github.com/sdn-sense/siterm-utilities
+git clone https://github.com/$gitr/siterm-utilities
 cd siterm-utilities
 python setup.py install || exit $?
 
