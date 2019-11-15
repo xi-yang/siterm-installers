@@ -96,6 +96,11 @@ if [ X"$tsdip" = X ]; then
   echo "WARNING: Repository ip is not specified." 1>&2
 fi
 
+if [ X"$gitr" = X ]; then
+  echo "WARNING: Git Repo not set. using default sdn-sense is not specified." 1>&2
+  gitr=sdn-sense
+fi
+
 
 # =======================================================================
 # Checking if running as root
