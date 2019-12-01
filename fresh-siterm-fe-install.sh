@@ -31,7 +31,7 @@
 
 # TODO also force to specify TSDB parameters it should get from FE.
 # TODO. data directory should come from configuration parameter
-datadir=/opt/dtnrm/fe/config
+datadir=/opt/config/fe/
 workdir=`pwd`
 packages="git autoconf automake curl gcc libmnl-devel libuuid-devel lm_sensors make MySQL-python nc pkgconfig python wget python-psycopg2 PyYAML zlib-devel python-devel httpd mod_wsgi mod_ssl"
 # Check if release is supported.
