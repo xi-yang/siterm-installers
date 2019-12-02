@@ -98,7 +98,7 @@ if [ X"$tsdip" = X ]; then
 fi
 
 if [ X"$gitr" = X ]; then
-  echo "WARNING: Git Repo not set. using default sdn-sense is not specified." 1>&2
+  echo "WARNING: Git Repo not set. using default sdn-sense if not specified." 1>&2
   gitr=sdn-sense
 fi
 
