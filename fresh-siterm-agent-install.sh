@@ -32,7 +32,7 @@
 # TODO also force to specify FE URL, FE Port; TSDB parameters it should get from FE.
 # Other configuration users have to specify by himself.
 workdir=`pwd`
-packages="git autoconf automake curl gcc traceroute libmnl-devel libuuid-devel lm_sensors ipset make MySQL-python nc pkgconfig python python-psycopg2 PyYAML zlib-devel python-devel wget vconfig tcpdump jq"
+packages="git autoconf automake curl gcc traceroute libmnl-devel libuuid-devel lm_sensors ipset make MySQL-python nc pkgconfig python python-psycopg2 PyYAML zlib-devel python-devel wget vconfig tcpdump jq iproute2"
 # Check if release is supported.
 # TODO. Support other releases also.
 case $(uname) in
