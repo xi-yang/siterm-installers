@@ -5,7 +5,6 @@ MAINTAINER Justas Balcas <jbalcas@caltech.edu>
 RUN adduser apache -U -u 48
 
 RUN mkdir -p /opt/ && mkdir -p /opt/config/fe/
-RUN mkdir -p /test/
 RUN mkdir -p /etc/httpd/certs/ && mkdir -p /etc/httpd/conf.d/
 RUN yum -y install git sudo && yum clean all
 RUN git clone https://github.com/sdn-sense/siterm-installers

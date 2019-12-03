@@ -1,3 +1,3 @@
 #!/bin/bash
 
-docker build -t siteagent .
+docker build --no-cache -t siteagent .

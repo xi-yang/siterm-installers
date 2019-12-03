@@ -156,4 +156,5 @@ elif [ "$certissuer" = "letsencrypt" ]; then
       cp -L /etc/letsencrypt/live/$FQDN/cert.pem /etc/grid-security/hostcert.pem
       cp -L /etc/letsencrypt/live/$FQDN/privkey.pem /etc/grid-security/hostkey.pem
       python cert-checker.py /etc/httpd/certs/cert.pem
+   fi
 fi
