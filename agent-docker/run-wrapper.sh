@@ -8,6 +8,7 @@ exec 1>log.out 2>&1
 
 set -x
 set -m
+chown -R apache:apache  /opt/siterm/config/
 # Start the first process
 sudo -u root /usr/bin/dtnrmagent-update start
 status=$?
