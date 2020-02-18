@@ -161,9 +161,9 @@ rm -rf siterm
 git clone https://github.com/$gitr/siterm
 cd siterm
 if [ X"$docker" = X ]; then
-  python setup-sitefe.py install || exit $?
+  python setup-agent.py install || exit $?
 else
-  python setup-sitefe.py install --docker || exit $?
+  python setup-agent.py install --docker || exit $?
 fi
 
 echo "==================================================================="
